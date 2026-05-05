@@ -966,8 +966,8 @@ function renderResults() {
     return;
   }
   
-  const pagoLabel = plan.is_quincenal ? 'Pago Quincenal' : 'Pago Mensual';
-  const mesesLabel = plan.is_quincenal ? 'Quincenas' : 'Meses';
+  const pagoLabel = plan.is_quincenal ? 'Pago Mensual' : 'Pago Mensual';
+  const mesesLabel = plan.is_quincenal ? 'Meses' : 'Meses';
   const searchLabel = searchMode === 'pago' ? `Pago buscado: ${fmt(currentResult)}` : `Monto buscado: ${fmt(currentResult)}`;
   
   // Calcular costo total
