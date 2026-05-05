@@ -824,13 +824,13 @@ function calcularTipoSeguro() {
   let mensaje = '', clase = '';
   
   if (resultado === 'SEGURO 1') {
-    mensaje = `✅ SEGURO 1 - Se cobrará SOLO los primeros 12 meses del crédito`;
+    mensaje = `SEGURO 1`;
     clase = 'seguro-resultado seguro1';
   } else if (resultado === 'SEGURO 2') {
-    mensaje = `⚠️ SEGURO 2 - Se cobrará durante TODOS los meses del crédito`;
+    mensaje = `SEGURO 2`;
     clase = 'seguro-resultado seguro2';
   } else {
-    mensaje = `❌ NO APLICA seguro adicional`;
+    mensaje = `NO APLICA seguro adicional`;
     clase = 'seguro-resultado no-seguro';
   }
   
