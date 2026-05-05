@@ -678,7 +678,7 @@ function calcularSeguro() {
   
   // Validar que la edad sea válida
   if (isNaN(edad) || edad < 18 || edad > 120) {
-    resultadoDiv.innerHTML = '⚠️ Por favor, ingresa una edad válida (entre 18 y 120 años)';
+    resultadoDiv.innerHTML = 'Por favor, ingresa una edad válida (entre 18 y 120 años)';
     resultadoDiv.className = 'seguro-resultado no-seguro';
     return null;
   }
@@ -738,13 +738,13 @@ function calcularSeguro() {
   let clase = '';
   
   if (resultado === 'SEGURO 1') {
-    mensaje = `🛡️ Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - APLICA ${resultado}`;
+    mensaje = `Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - APLICA ${resultado}`;
     clase = 'seguro-resultado seguro1';
   } else if (resultado === 'SEGURO 2') {
-    mensaje = `⚠️ Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - APLICA ${resultado}`;
+    mensaje = `Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - APLICA ${resultado}`;
     clase = 'seguro-resultado seguro2';
   } else {
-    mensaje = `✅ Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - NO APLICA seguro adicional`;
+    mensaje = `Para ${tipoSeguro} con ${edad} años (${genero === 'MASCULINO' ? 'Masculino' : 'Femenino'}) - NO APLICA seguro adicional`;
     clase = 'seguro-resultado no-seguro';
   }
   
