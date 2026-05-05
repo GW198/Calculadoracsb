@@ -557,25 +557,30 @@ function selectPlan(key) {
 function findClosest(planKey, monthStr, targetPago) {
   const rows = PLANS[planKey].rows;
   let best = null;
-  let bestDiff = Infinity;
-
+  
+  // Recorremos todas las filas (ya están ordenadas por monto ascendente)
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    // monthStr es string como "60", accede directamente a row[monthStr]
     const monthData = row[monthStr];
     if (!monthData) continue;
-    const pago = monthData.pago;  // ⚠️ IMPORTANTE: usa .pago, no [0]
-    const diff = Math.abs(pago - targetPago);
-    if (diff < bestDiff) {
-      bestDiff = diff;
+    
+    const pago = monthData.pago;
+    
+    //  SOLO consideramos opciones con pago MENOR o IGUAL al objetivo
+    if (pago <= targetPago) {
+      // Esta es la mejor opción hasta ahora (la última encontrada será la mayor que cumple la condición)
       best = { 
-        monto: row.monto,    // ⚠️ usa row.monto, no row[0]
+        monto: row.monto, 
         pago: pago, 
-        cat: monthData.cat,  // ⚠️ usa monthData.cat, no monthData[1]
-        diff: diff 
+        cat: monthData.cat
       };
+    } else {
+      // Como los rows están ordenados por monto ascendente (y pago también),
+      // al encontrar un pago mayor, podemos salir del ciclo
+      break;
     }
   }
+  
   return best;
 }
 
