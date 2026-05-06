@@ -1209,10 +1209,218 @@ document.getElementById('searchInput')?.addEventListener('keydown', e => {
     if (id === 'edad') element.addEventListener('input', actualizarSeguro);
   }
 });
+let currentPlan = Object.keys(RAW)[0] || 'Plan Premium';
+let currentMonth = null;
+let currentSearchValue = null;
+let searchMode = 'pago';
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.style.setProperty('--bg', theme.bg);
+  root.style.setProperty('--surface', theme.surface);
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--text', theme.text);
+  root.style.setProperty('--text-muted', theme.textMuted);
+  root.style.setProperty('--font-main', theme.fontFamily);
+  root.style.setProperty('--card-glow', `0 0 ${theme.glowIntensity}px ${theme.accent}20`);
+  document.body.style.fontSize = `${theme.baseFontSize}px`;
+  
+  // También actualizar el color de bordes derivado
+  root.style.setProperty('--border', theme.accent + '40');
+  root.style.setProperty('--surface2', `color-mix(in srgb, ${theme.surface} 80%, ${theme.accent} 20%)`);
+}
+
+function saveTheme(theme) {
+  localStorage.setItem('userTheme', JSON.stringify(theme));
+  applyTheme(theme);
+}
+
+function loadSavedTheme() {
+  const saved = localStorage.getItem('userTheme');
+  const defaultTheme = {
+    bg: '#0a0e1a',
+    surface: '#111827',
+    accent: '#00d4ff',
+    text: '#f1f5f9',
+    textMuted: '#64748b',
+    fontFamily: "'DM Sans', sans-serif",
+    baseFontSize: 16,
+    glowIntensity: 8
+  };
+  if (saved) {
+    try {
+      return { ...defaultTheme, ...JSON.parse(saved) };
+    } catch(e) {}
+  }
+  return defaultTheme;
+}
+
+function updateThemeUI(theme) {
+  document.getElementById('bgColorPicker').value = theme.bg;
+  document.getElementById('bgColorHex').value = theme.bg;
+  document.getElementById('surfaceColorPicker').value = theme.surface;
+  document.getElementById('surfaceColorHex').value = theme.surface;
+  document.getElementById('accentColorPicker').value = theme.accent;
+  document.getElementById('accentColorHex').value = theme.accent;
+  document.getElementById('textColorPicker').value = theme.text;
+  document.getElementById('textColorHex').value = theme.text;
+  document.getElementById('mutedColorPicker').value = theme.textMuted;
+  document.getElementById('mutedColorHex').value = theme.textMuted;
+  document.getElementById('fontSelect').value = theme.fontFamily;
+  document.getElementById('baseFontSize').value = theme.baseFontSize;
+  document.getElementById('fontSizeValue').textContent = `${theme.baseFontSize}px`;
+  document.getElementById('glowIntensity').value = theme.glowIntensity;
+  document.getElementById('glowValue').textContent = `${theme.glowIntensity}px`;
+}
+
+function resetTheme() {
+  const defaultTheme = {
+    bg: '#0a0e1a',
+    surface: '#111827',
+    accent: '#00d4ff',
+    text: '#f1f5f9',
+    textMuted: '#64748b',
+    fontFamily: "'DM Sans', sans-serif",
+    baseFontSize: 16,
+    glowIntensity: 8
+  };
+  saveTheme(defaultTheme);
+  updateThemeUI(defaultTheme);
+}
+
+function setupThemeControls() {
+  // Color pickers
+  const colorConfigs = [
+    { picker: 'bgColorPicker', hex: 'bgColorHex', prop: 'bg' },
+    { picker: 'surfaceColorPicker', hex: 'surfaceColorHex', prop: 'surface' },
+    { picker: 'accentColorPicker', hex: 'accentColorHex', prop: 'accent' },
+    { picker: 'textColorPicker', hex: 'textColorHex', prop: 'text' },
+    { picker: 'mutedColorPicker', hex: 'mutedColorHex', prop: 'textMuted' }
+  ];
+  
+  colorConfigs.forEach(cfg => {
+    const picker = document.getElementById(cfg.picker);
+    const hexInput = document.getElementById(cfg.hex);
+    if (picker) {
+      picker.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (hexInput) hexInput.value = val;
+        const theme = getCurrentTheme();
+        theme[cfg.prop] = val;
+        saveTheme(theme);
+      });
+    }
+    if (hexInput) {
+      hexInput.addEventListener('change', (e) => {
+        let val = e.target.value;
+        if (!val.startsWith('#')) val = '#' + val;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+          if (picker) picker.value = val;
+          const theme = getCurrentTheme();
+          theme[cfg.prop] = val;
+          saveTheme(theme);
+        }
+      });
+    }
+  });
+  
+  // Presets de colores
+  document.querySelectorAll('.preset-color').forEach(el => {
+    el.addEventListener('click', () => {
+      const color = el.dataset.color;
+      const target = el.dataset.target;
+      if (target === 'bg') {
+        document.getElementById('bgColorPicker').value = color;
+        document.getElementById('bgColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.bg = color;
+        saveTheme(theme);
+      } else if (target === 'surface') {
+        document.getElementById('surfaceColorPicker').value = color;
+        document.getElementById('surfaceColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.surface = color;
+        saveTheme(theme);
+      } else if (target === 'accent') {
+        document.getElementById('accentColorPicker').value = color;
+        document.getElementById('accentColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.accent = color;
+        saveTheme(theme);
+      } else if (target === 'text') {
+        document.getElementById('textColorPicker').value = color;
+        document.getElementById('textColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.text = color;
+        saveTheme(theme);
+      }
+    });
+  });
+  
+  // Fuente
+  const fontSelect = document.getElementById('fontSelect');
+  if (fontSelect) {
+    fontSelect.addEventListener('change', () => {
+      const theme = getCurrentTheme();
+      theme.fontFamily = fontSelect.value;
+      saveTheme(theme);
+    });
+  }
+  
+  // Tamaño de fuente
+  const fontSizeSlider = document.getElementById('baseFontSize');
+  if (fontSizeSlider) {
+    fontSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('fontSizeValue').textContent = `${val}px`;
+      const theme = getCurrentTheme();
+      theme.baseFontSize = parseInt(val);
+      saveTheme(theme);
+    });
+  }
+  
+  // Intensidad de glow
+  const glowSlider = document.getElementById('glowIntensity');
+  if (glowSlider) {
+    glowSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('glowValue').textContent = `${val}px`;
+      const theme = getCurrentTheme();
+      theme.glowIntensity = parseInt(val);
+      saveTheme(theme);
+    });
+  }
+}
+
+function getCurrentTheme() {
+  const root = getComputedStyle(document.documentElement);
+  return {
+    bg: root.getPropertyValue('--bg').trim(),
+    surface: root.getPropertyValue('--surface').trim(),
+    accent: root.getPropertyValue('--accent').trim(),
+    text: root.getPropertyValue('--text').trim(),
+    textMuted: root.getPropertyValue('--text-muted').trim(),
+    fontFamily: root.getPropertyValue('--font-main').trim(),
+    baseFontSize: parseInt(document.body.style.fontSize) || 16,
+    glowIntensity: parseInt(root.getPropertyValue('--card-glow').match(/\d+/)?.[0] || 8)
+  };
+}
+
+function toggleThemePanel() {
+  const content = document.getElementById('themeContent');
+  const icon = document.getElementById('themeToggleIcon');
+  content.classList.toggle('open');
+  icon.classList.toggle('open');
+}
 
 // Inicialización
+const savedTheme = loadSavedTheme();
+applyTheme(savedTheme);
+setupThemeControls();
+updateThemeUI(savedTheme);
 initPlanTabs();
 calcularTipoSeguro();
+
 
 // Mensaje si no hay datos reales cargados
 if (Object.keys(RAW).length === 0) {
