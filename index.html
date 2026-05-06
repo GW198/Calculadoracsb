@@ -1029,46 +1029,33 @@ const RAW = {"MN 4721 2.67": {"months": [60, 48, 36, 24], "is_quincenal": false,
 
 // ==================== DATOS DE RESPALDO PARA DEMOSTRACIÓN ====================
 // (Si no hay datos reales, se usa este generador para que la interfaz funcione)
-if (Object.keys(RAW).length === 0) {
-  // Planes de demostración con tasas realistas
-  const tasaMensualPorPlan = {
-    'MN 4721 2.67': 0.0267,
-    'CSP 4671 2.66': 0.0266,
-    '4592 OPC 2.5': 0.0250,
-    'CSB 4695 2.4': 0.0240,
-    'CSB 4707 1.99': 0.0199
-  };
-  const mesesPorPlan = {
-    'MN 4721 2.67': [60, 48, 36, 24],
-    'CSP 4671 2.66': [60, 54, 48, 36, 24, 12],
-    '4592 OPC 2.5': [60, 54, 48, 36],
-    'CSB 4695 2.4': [60, 54, 48, 36],
-    'CSB 4707 1.99': [60]
-  };
-  
-  for (let plan in tasaMensualPorPlan) {
-    let tasa = tasaMensualPorPlan[plan];
-    let tasaConIva = tasa * 1.16;
-    let rows = [];
-    for (let monto = 5000; monto <= 1000000; monto += 500) {
-      let row = { monto: monto };
-      for (let mes of mesesPorPlan[plan]) {
-        let pago = (tasaConIva * monto) / (1 - Math.pow(1 + tasaConIva, -mes));
-        row[mes] = { pago: Math.round(pago * 100) / 100, cat: 0 };
-      }
-      rows.push(row);
-    }
-    RAW[plan] = { months: mesesPorPlan[plan], rows: rows };
-  }
-}
+
+ 
 
 // Metadatos de los planes
+for (let plan in RAW) {
+  let rows = [];
+  let tasaMeta = { "MN 4721 2.67": 0.0293, "CSP 4671 2.66": 0.0293, "4592 OPC 2.5": 0.0293, "CSB 4695 2.4": 0.0293, "CSB 4707 1.99": 0.0199 };
+  let tasaMensual = tasaMeta[plan] || 0.0293;
+  let tasaConIva = tasaMensual * 1.16;
+  
+  for (let monto = 5000; monto <= 1000000; monto += 500) {
+    let row = { monto: monto };
+    for (let meses of RAW[plan].months) {
+      let pago = (tasaConIva * monto) / (1 - Math.pow(1 + tasaConIva, -meses));
+      row[meses] = { pago: Math.round(pago * 100) / 100 };
+    }
+    rows.push(row);
+  }
+  RAW[plan].rows = rows;
+}
+
 const PLAN_META = {
-  'MN 4721 2.67': { label: 'MN 2.67%', desc: 'Tasa Mensual 2.67%', cat: 'CAT ~37.2%', color: '#ef4444' },
-  'CSP 4671 2.66': { label: 'CSP 2.66%', desc: 'Tasa Mensual 2.66%', cat: 'CAT ~37%', color: '#f97316' },
-  '4592 OPC 2.5': { label: 'OPC 2.5%', desc: 'Tasa Mensual 2.5%', cat: 'CAT ~35.6%', color: '#eab308' },
-  'CSB 4695 2.4': { label: 'CSB 2.4%', desc: 'Tasa Mensual 2.4%', cat: 'CAT ~32.9%', color: '#22c55e' },
-  'CSB 4707 1.99': { label: 'CSB 1.99%', desc: 'Tasa Mensual 1.99%', cat: 'CAT ~26.7%', color: '#00d4ff' }
+  'MN 4721 2.67': { label: 'MN 2.67%', desc: 'Tasa Mensual 2.67%' },
+  'CSP 4671 2.66': { label: 'CSP 2.66%', desc: 'Tasa Mensual 2.66%' },
+  '4592 OPC 2.5': { label: 'OPC 2.5%', desc: 'Tasa Mensual 2.5%' },
+  'CSB 4695 2.4': { label: 'CSB 2.4%', desc: 'Tasa Mensual 2.4%' },
+  'CSB 4707 1.99': { label: 'CSB 1.99%', desc: 'Tasa Mensual 1.99%' }
 };
 // ==================== SISTEMA DE TEMAS UNIVERSAL ====================
 
