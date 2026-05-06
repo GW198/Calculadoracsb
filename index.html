@@ -1356,7 +1356,7 @@ function calcularTipoSeguro() {
 }
 
 // Calcular cobro de seguro por mes
-function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes, plazoTotal) {
+function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes) {
   const valorAsegurable = saldo + interes + ivaInteres;
   const seguroBase = valorAsegurable * (1.99 / 1000);
   if (tipoSeguro === 'NO APLICA') return 0;
@@ -1367,7 +1367,7 @@ function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes,
 
 // Calcular tabla de amortización completa
 function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro) {
-  let tasaMensual = 0.024; // Tasa base de referencia
+  let tasaMensual = 0.0293; // Tasa base de referencia
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
@@ -1380,7 +1380,7 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
     let nuevoSaldo = saldo - pagoCapital;
     if (nuevoSaldo < 0) nuevoSaldo = 0;
     
-    let cobroSeguro = calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes, plazoMeses);
+    let cobroSeguro = calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes);
     totalSeguro += cobroSeguro;
     
     tabla.push({
@@ -1393,7 +1393,7 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
       cobroSeguro: cobroSeguro
     });
     saldo = nuevoSaldo;
-    if (saldo <= 0.01) break;
+    if (saldo <= 0) break;
   }
   return { tabla, totalSeguro };
 }
