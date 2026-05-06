@@ -646,7 +646,32 @@
     <h1>Calculadora de<br>Financiamiento</h1>
    
   </div>
-
+<div class="theme-panel" id="themePanel">
+    <div class="theme-header" onclick="toggleThemePanel()">
+      <h3>🎨 PERSONALIZAR TEMA (Cualquier Color)</h3>
+      <span class="theme-toggle-icon" id="themeToggleIcon">▼</span>
+    </div>
+    <div class="theme-content" id="themeContent">
+      <div class="theme-grid">
+        
+        <!-- Color de Fondo Principal -->
+        <div class="theme-group">
+          <label>🌌 Fondo Principal</label>
+          <div class="color-picker-row">
+            <div class="color-input-wrapper">
+              <span>🎨</span>
+              <input type="color" id="bgColorPicker" value="#0a0e1a">
+              <input type="text" id="bgColorHex" class="color-hex-input" value="#0a0e1a">
+            </div>
+          </div>
+          <div class="preset-colors">
+            <div class="preset-color" style="background: #0a0e1a" data-color="#0a0e1a" data-target="bg"></div>
+            <div class="preset-color" style="background: #1a1a2e" data-color="#1a1a2e" data-target="bg"></div>
+            <div class="preset-color" style="background: #0f0f1a" data-color="#0f0f1a" data-target="bg"></div>
+            <div class="preset-color" style="background: #111827" data-color="#111827" data-target="bg"></div>
+            <div class="preset-color" style="background: #1e1e2f" data-color="#1e1e2f" data-target="bg"></div>
+          </div>
+        </div>
   <!-- Panel de Seguro -->
   <div class="seguro-card">
     <div class="input-label">📋 Información del Cliente</div>
@@ -683,7 +708,7 @@
       <button class="mode-btn active" data-mode="pago" onclick="setSearchMode('pago')">🔍 Buscar por Pago Mensual</button>
       <button class="mode-btn" data-mode="monto" onclick="setSearchMode('monto')">💰 Buscar por Monto a Financiar</button>
     </div>
-    <div class="input-label" id="inputLabel">¿Cuánto puedes pagar al mes?</div>
+    <div class="input-label" id="inputLabel">Solvencia mensual</div>
     <div class="input-row">
       <div class="input-wrapper">
         <span class="currency-prefix">$</span>
@@ -927,7 +952,7 @@ function setSearchMode(mode) {
   const input = document.getElementById('searchInput');
   
   if (mode === 'pago') {
-    label.innerHTML = '¿Cuánto puedes pagar al mes?';
+    label.innerHTML = 'Solvencia mensual';
     hint.innerHTML = 'Ingresa un monto y presiona Enter para ver los montos que puedes financiar';
     input.placeholder = 'Ej. 3,500';
   } else {
