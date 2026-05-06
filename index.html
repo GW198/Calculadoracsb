@@ -1355,19 +1355,19 @@ function calcularTipoSeguro() {
   return resultado;
 }
 
-// Calcular cobro de seguro por mes (SEGURO 1: solo primeros 12 meses, SEGURO 2: todos los meses)
-function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes) {
-  let valorAsegurable = saldo + interes + ivaInteres;
-  let seguroBase = valorAsegurable * (1.99 / 1000);
+// Calcular cobro de seguro por mes
+function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes, plazoTotal) {
+  const valorAsegurable = saldo + interes + ivaInteres;
+  const seguroBase = valorAsegurable * (1.99 / 1000);
   if (tipoSeguro === 'NO APLICA') return 0;
   if (tipoSeguro === 'SEGURO 1') return (mes <= 12) ? seguroBase : 0;
   if (tipoSeguro === 'SEGURO 2') return seguroBase;
   return 0;
 }
 
-// Calcular tabla de amortización
+// Calcular tabla de amortización completa
 function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro) {
-  let tasaMensual = 0.0293;
+  let tasaMensual = 0.024; // Tasa base de referencia
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
@@ -1380,7 +1380,7 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
     let nuevoSaldo = saldo - pagoCapital;
     if (nuevoSaldo < 0) nuevoSaldo = 0;
     
-    let cobroSeguro = calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes);
+    let cobroSeguro = calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes, plazoMeses);
     totalSeguro += cobroSeguro;
     
     tabla.push({
@@ -1393,11 +1393,15 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
       cobroSeguro: cobroSeguro
     });
     saldo = nuevoSaldo;
-    if (saldo <= 0) break;
+    if (saldo <= 0.01) break;
   }
   return { tabla, totalSeguro };
 }
-  
+
+function fmt(n) {
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 }).format(n);
+}
+
 // Inicializar pestañas de planes
 function initPlanTabs() {
   const container = document.getElementById('planTabs');
