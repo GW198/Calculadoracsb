@@ -19,28 +19,33 @@
     --text: #f1f5f9;
     --muted: #64748b;
     --card-glow: 0 0 30px rgba(0,212,255,0.08);
+    --font-body: 'DM Sans', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+
+/* APLICAR LA MISMA FUENTE A TODO */
+  body, input, select, button, textarea, .container, .header, .theme-panel, 
+  .seguro-card, .input-card, .results-card, .plan-tab, .mode-btn, .search-btn,
+  .month-result-card, .result-metric, .costo-detalle, .tabla-dispersion,
+  .resumen-dispersion, .match-badge, .plan-info-bar, .metric-value,
+  .metric-label, .detalle-row, .mrc-months, .mrc-pago, .mrc-cat {
+    font-family: var(--font-body);
+  }
+
+  /* Headings pueden mantener fuente distinta opcionalmente */
+  .header h1, .section-label, .input-label, .theme-header h3, .plan-tab .tab-name {
+    font-family: var(--font-body);
+    font-weight: 700;
   }
 
   .container {
@@ -89,7 +94,7 @@
     border-radius: 10px;
     color: var(--text);
     padding: 8px 12px;
-    font-family: monospace;
+    
     font-size: 13px;
     width: 100px;
   }
@@ -124,7 +129,7 @@
     border: 1.5px solid var(--border);
     border-radius: 12px;
     color: var(--text);
-    font-family: var(--font-main);
+    
     font-size: 14px;
     padding: 10px 12px;
     width: 100%;
@@ -153,7 +158,7 @@
     color: var(--red);
     padding: 10px 20px;
     cursor: pointer;
-    font-family: var(--font-heading);
+    
     font-size: 12px;
     font-weight: 600;
     transition: all 0.2s;
@@ -181,7 +186,7 @@
   }
   
   .theme-header h3 {
-    font-family: var(--font-heading);
+    
     font-size: 14px;
     letter-spacing: 2px;
     color: var(--accent);
@@ -223,7 +228,7 @@
   }
   
   .theme-group label {
-    font-family: var(--font-heading);
+    
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -249,7 +254,7 @@
     margin-bottom: 16px;
   }
   .header h1 {
-    font-family: 'Syne', sans-serif;
+    
     font-size: clamp(28px, 5vw, 48px);
     font-weight: 800;
     background: linear-gradient(135deg, #fff 30%, var(--accent));
@@ -285,7 +290,7 @@
   .mode-btn {
     padding: 8px 24px;
     border-radius: 32px;
-    font-family: 'Syne', sans-serif;
+    
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -305,7 +310,7 @@
   }
 
   .input-label {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -351,7 +356,7 @@
     border: 1.5px solid var(--border);
     border-radius: 12px;
     color: var(--text);
-    font-family: 'Syne', sans-serif;
+    
     font-size: 24px;
     font-weight: 700;
     padding: 16px 16px 16px 42px;
@@ -369,7 +374,7 @@
     border: none;
     border-radius: 12px;
     color: #fff;
-    font-family: 'Syne', sans-serif;
+    
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -391,7 +396,7 @@
   }
 
   .section-label {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -416,7 +421,7 @@
     color: var(--muted);
     cursor: pointer;
     padding: 10px 16px;
-    font-family: 'DM Sans', sans-serif;
+    
     font-size: 13px;
     font-weight: 500;
     transition: all 0.2s;
@@ -425,7 +430,7 @@
     min-width: 140px;
   }
   .plan-tab .tab-name {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 13px;
     font-weight: 700;
     display: block;
@@ -467,7 +472,7 @@
     color: var(--muted);
     cursor: pointer;
     padding: 10px 20px;
-    font-family: 'Syne', sans-serif;
+    
     font-size: 14px;
     font-weight: 700;
     transition: all 0.15s;
@@ -538,7 +543,7 @@
     margin-bottom: 8px;
   }
   .result-metric .metric-value {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 26px;
     font-weight: 800;
     color: var(--accent);
@@ -600,7 +605,7 @@
     box-shadow: 0 0 16px rgba(0,212,255,0.12);
   }
   .month-result-card .mrc-months {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 22px;
     font-weight: 800;
     color: var(--text);
@@ -611,7 +616,7 @@
     margin-bottom: 10px;
   }
   .month-result-card .mrc-pago {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 15px;
     font-weight: 700;
     color: var(--accent);
@@ -643,7 +648,7 @@
     font-size: 13px;
   }
   .plan-info-bar .pib-name {
-    font-family: 'Syne', sans-serif;
+    
     font-weight: 700;
     color: var(--text);
   }
@@ -687,7 +692,7 @@
     color: var(--muted);
   }
   .costo-detalle .detalle-valor {
-    font-family: 'Syne', sans-serif;
+    
     font-weight: 600;
   }
 
@@ -712,7 +717,7 @@
     gap: 8px;
   }
   .seguro-field label {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -723,7 +728,7 @@
     border: 1.5px solid var(--border);
     border-radius: 12px;
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
+    
     font-size: 16px;
     padding: 12px 16px;
     outline: none;
@@ -770,7 +775,7 @@
     margin-bottom: 8px;
   }
   .resumen-dispersion .monto {
-    font-family: 'Syne', sans-serif;
+    
     font-size: 30px;
     font-weight: 800;
   }
@@ -797,7 +802,7 @@
     font-size: 11px;
     text-align: center;
     color: var(--accent);
-    font-family: 'Syne', sans-serif;
+    
     letter-spacing: 1px;
   }
   .tabla-dispersion td:first-child {
@@ -924,8 +929,8 @@
         </div>
 
         <!-- Fuente y Tamaño -->
-        <div class="theme-group">
-          <label>🔤 Tipografía</label>
+        <<div class="theme-group">
+          <label>📝 Fuente Global (Texto, Números, Todo)</label>
           <select id="fontSelect" class="font-select">
             <option value="'DM Sans', sans-serif">DM Sans (Moderna)</option>
             <option value="'Inter', sans-serif">Inter (Profesional)</option>
@@ -933,7 +938,25 @@
             <option value="'Roboto', sans-serif">Roboto (Clásica)</option>
             <option value="'Montserrat', sans-serif">Montserrat (Minimalista)</option>
             <option value="'Open Sans', sans-serif">Open Sans (Legible)</option>
+            <!-- Fuentes divertidas -->
+            <option value="'Comic Neue', cursive">Comic Neue (Divertida)</option>
+            <option value="'Fredoka One', cursive">Fredoka One (Amigable)</option>
+            <option value="'Quicksand', sans-serif">Quicksand (Suave)</option>
+            <option value="'Pacifico', cursive">Pacifico (Manuscrita)</option>
+            <option value="'Righteous', cursive">Righteous (Impactante)</option>
+            <option value="'Bangers', cursive">Bangers (Cómic)</option>
+            <option value="'Lobster', cursive">Lobster (Elegante divertida)</option>
+            <option value="'Press Start 2P', cursive">Press Start 2P (Pixelada)</option>
           </select>
+        </div>
+
+        <!-- Tamaño Base -->
+        <div class="theme-group">
+          <label>📏 Tamaño Base</label>
+          <div class="font-size-control">
+            <input type="range" id="baseFontSize" min="12" max="22" step="1" value="16">
+            <span id="fontSizeValue">16px</span>
+          </div>
         </div>
 
         <div class="theme-group">
@@ -1018,6 +1041,7 @@
   </div>
 
 </div>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;700&family=Poppins:wght@400;500;700&family=Roboto:wght@400;500;700&family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;500;700&family=Comic+Neue:wght@400;700&family=Fredoka+One&family=Quicksand:wght@400;500;700&family=Pacifico&family=Righteous&family=Bangers&family=Lobster&family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <script>
 // ==================== DATOS (COMPLETAR CON TU JSON) ====================
@@ -1072,12 +1096,13 @@ const PLAN_META = {
 
 function applyTheme(theme) {
   const root = document.documentElement;
+  root.style.setProperty('--font-body', theme.fontFamily);
   root.style.setProperty('--bg', theme.bg);
   root.style.setProperty('--surface', theme.surface);
   root.style.setProperty('--accent', theme.accent);
   root.style.setProperty('--text', theme.text);
   root.style.setProperty('--text-muted', theme.textMuted);
-  root.style.setProperty('--font-main', theme.fontFamily);
+  
   root.style.setProperty('--card-glow', `0 0 ${theme.glowIntensity}px ${theme.accent}20`);
   document.body.style.fontSize = `${theme.baseFontSize}px`;
   
