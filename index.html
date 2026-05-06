@@ -50,7 +50,188 @@
     position: relative;
     z-index: 1;
   }
+.color-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .color-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    flex: 1;
+  }
+  
+  .color-input-wrapper span {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  input[type="color"] {
+    width: 50px;
+    height: 40px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--surface);
+    padding: 2px;
+  }
+  
+  .color-hex-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-family: monospace;
+    font-size: 13px;
+    width: 100px;
+  }
+  
+  .preset-colors {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .preset-color {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  
+  .preset-color:hover {
+    transform: scale(1.1);
+  }
+  
+  .preset-color.active {
+    border-color: white;
+    box-shadow: 0 0 0 1px var(--bg);
+  }
+  
+  .font-select {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: var(--font-main);
+    font-size: 14px;
+    padding: 10px 12px;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .font-size-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .font-size-control input {
+    flex: 1;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    padding: 10px 12px;
+  }
+  
+  .reset-theme-btn {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid var(--red);
+    border-radius: 12px;
+    color: var(--red);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .reset-theme-btn:hover {
+    background: rgba(239,68,68,0.25);
+  }
 
+   /* ========== PANEL DE TEMAS MEJORADO ========== */
+  .theme-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--card-glow);
+  }
+
+  .theme-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .theme-header h3 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .theme-toggle-icon {
+    font-size: 20px;
+    transition: transform 0.3s;
+  }
+  
+  .theme-toggle-icon.open {
+    transform: rotate(180deg);
+  }
+  
+  .theme-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  
+  .theme-content.open {
+    max-height: 800px;
+    margin-top: 20px;
+  }
+  
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  
+  .theme-group {
+    background: var(--surface2);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  
+  .theme-group label {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 12px;
+  }
+  
   .header {
     text-align: center;
     padding: 40px 0 32px;
@@ -646,7 +827,8 @@
     <h1>Calculadora de<br>Financiamiento</h1>
    
   </div>
-<div class="theme-panel" id="themePanel">
+ <!-- Panel de Temas Personalizables - Selector Universal -->
+  <div class="theme-panel" id="themePanel">
     <div class="theme-header" onclick="toggleThemePanel()">
       <h3>🎨 PERSONALIZAR TEMA (Cualquier Color)</h3>
       <span class="theme-toggle-icon" id="themeToggleIcon">▼</span>
@@ -672,6 +854,110 @@
             <div class="preset-color" style="background: #1e1e2f" data-color="#1e1e2f" data-target="bg"></div>
           </div>
         </div>
+
+        <!-- Color de Tarjetas (Surface) -->
+        <div class="theme-group">
+          <label>📦 Color de Tarjetas</label>
+          <div class="color-picker-row">
+            <div class="color-input-wrapper">
+              <span>🎨</span>
+              <input type="color" id="surfaceColorPicker" value="#111827">
+              <input type="text" id="surfaceColorHex" class="color-hex-input" value="#111827">
+            </div>
+          </div>
+          <div class="preset-colors">
+            <div class="preset-color" style="background: #111827" data-color="#111827" data-target="surface"></div>
+            <div class="preset-color" style="background: #1a1f2e" data-color="#1a1f2e" data-target="surface"></div>
+            <div class="preset-color" style="background: #0d1117" data-color="#0d1117" data-target="surface"></div>
+            <div class="preset-color" style="background: #16213e" data-color="#16213e" data-target="surface"></div>
+          </div>
+        </div>
+
+        <!-- Color de Acento (Botones, bordes activos) -->
+        <div class="theme-group">
+          <label>✨ Color Acento (Botones)</label>
+          <div class="color-picker-row">
+            <div class="color-input-wrapper">
+              <span>🎨</span>
+              <input type="color" id="accentColorPicker" value="#00d4ff">
+              <input type="text" id="accentColorHex" class="color-hex-input" value="#00d4ff">
+            </div>
+          </div>
+          <div class="preset-colors">
+            <div class="preset-color" style="background: #00d4ff" data-color="#00d4ff" data-target="accent"></div>
+            <div class="preset-color" style="background: #7c3aed" data-color="#7c3aed" data-target="accent"></div>
+            <div class="preset-color" style="background: #f59e0b" data-color="#f59e0b" data-target="accent"></div>
+            <div class="preset-color" style="background: #10b981" data-color="#10b981" data-target="accent"></div>
+            <div class="preset-color" style="background: #ef4444" data-color="#ef4444" data-target="accent"></div>
+            <div class="preset-color" style="background: #ff6b6b" data-color="#ff6b6b" data-target="accent"></div>
+          </div>
+        </div>
+
+        <!-- Color de Texto Principal -->
+        <div class="theme-group">
+          <label>📝 Color de Texto</label>
+          <div class="color-picker-row">
+            <div class="color-input-wrapper">
+              <span>🎨</span>
+              <input type="color" id="textColorPicker" value="#f1f5f9">
+              <input type="text" id="textColorHex" class="color-hex-input" value="#f1f5f9">
+            </div>
+          </div>
+          <div class="preset-colors">
+            <div class="preset-color" style="background: #f1f5f9" data-color="#f1f5f9" data-target="text"></div>
+            <div class="preset-color" style="background: #ffffff" data-color="#ffffff" data-target="text"></div>
+            <div class="preset-color" style="background: #e2e8f0" data-color="#e2e8f0" data-target="text"></div>
+            <div class="preset-color" style="background: #94a3b8" data-color="#94a3b8" data-target="text"></div>
+          </div>
+        </div>
+
+        <!-- Color de Texto Secundario (Muted) -->
+        <div class="theme-group">
+          <label>🌫️ Texto Secundario</label>
+          <div class="color-picker-row">
+            <div class="color-input-wrapper">
+              <span>🎨</span>
+              <input type="color" id="mutedColorPicker" value="#64748b">
+              <input type="text" id="mutedColorHex" class="color-hex-input" value="#64748b">
+            </div>
+          </div>
+        </div>
+
+        <!-- Fuente y Tamaño -->
+        <div class="theme-group">
+          <label>🔤 Tipografía</label>
+          <select id="fontSelect" class="font-select">
+            <option value="'DM Sans', sans-serif">DM Sans (Moderna)</option>
+            <option value="'Inter', sans-serif">Inter (Profesional)</option>
+            <option value="'Poppins', sans-serif">Poppins (Elegante)</option>
+            <option value="'Roboto', sans-serif">Roboto (Clásica)</option>
+            <option value="'Montserrat', sans-serif">Montserrat (Minimalista)</option>
+            <option value="'Open Sans', sans-serif">Open Sans (Legible)</option>
+          </select>
+        </div>
+
+        <div class="theme-group">
+          <label>📏 Tamaño Base</label>
+          <div class="font-size-control">
+            <input type="range" id="baseFontSize" min="12" max="20" step="1" value="16">
+            <span id="fontSizeValue">16px</span>
+          </div>
+        </div>
+
+        <div class="theme-group">
+          <label>✨ Intensidad de Brillo</label>
+          <div class="font-size-control">
+            <input type="range" id="glowIntensity" min="0" max="30" step="1" value="8">
+            <span id="glowValue">8px</span>
+          </div>
+        </div>
+
+      </div>
+      <div style="margin-top: 24px; text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button class="reset-theme-btn" onclick="resetTheme()">⟳ Restablecer Tema Predeterminado</button>
+      </div>
+    </div>
+  </div>
   <!-- Panel de Seguro -->
   <div class="seguro-card">
     <div class="input-label">📋 Información del Cliente</div>
@@ -781,6 +1067,207 @@ const PLAN_META = {
   'CSB 4695 2.4': { label: 'CSB 2.4%', desc: 'Tasa Mensual 2.4%', cat: 'CAT ~32.9%', color: '#22c55e' },
   'CSB 4707 1.99': { label: 'CSB 1.99%', desc: 'Tasa Mensual 1.99%', cat: 'CAT ~26.7%', color: '#00d4ff' }
 };
+// ==================== SISTEMA DE TEMAS UNIVERSAL ====================
+
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.style.setProperty('--bg', theme.bg);
+  root.style.setProperty('--surface', theme.surface);
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--text', theme.text);
+  root.style.setProperty('--text-muted', theme.textMuted);
+  root.style.setProperty('--font-main', theme.fontFamily);
+  root.style.setProperty('--card-glow', `0 0 ${theme.glowIntensity}px ${theme.accent}20`);
+  document.body.style.fontSize = `${theme.baseFontSize}px`;
+  
+  // También actualizar el color de bordes derivado
+  root.style.setProperty('--border', theme.accent + '40');
+  root.style.setProperty('--surface2', `color-mix(in srgb, ${theme.surface} 80%, ${theme.accent} 20%)`);
+}
+
+function saveTheme(theme) {
+  localStorage.setItem('userTheme', JSON.stringify(theme));
+  applyTheme(theme);
+}
+
+function loadSavedTheme() {
+  const saved = localStorage.getItem('userTheme');
+  const defaultTheme = {
+    bg: '#0a0e1a',
+    surface: '#111827',
+    accent: '#00d4ff',
+    text: '#f1f5f9',
+    textMuted: '#64748b',
+    fontFamily: "'DM Sans', sans-serif",
+    baseFontSize: 16,
+    glowIntensity: 8
+  };
+  if (saved) {
+    try {
+      return { ...defaultTheme, ...JSON.parse(saved) };
+    } catch(e) {}
+  }
+  return defaultTheme;
+}
+
+function updateThemeUI(theme) {
+  document.getElementById('bgColorPicker').value = theme.bg;
+  document.getElementById('bgColorHex').value = theme.bg;
+  document.getElementById('surfaceColorPicker').value = theme.surface;
+  document.getElementById('surfaceColorHex').value = theme.surface;
+  document.getElementById('accentColorPicker').value = theme.accent;
+  document.getElementById('accentColorHex').value = theme.accent;
+  document.getElementById('textColorPicker').value = theme.text;
+  document.getElementById('textColorHex').value = theme.text;
+  document.getElementById('mutedColorPicker').value = theme.textMuted;
+  document.getElementById('mutedColorHex').value = theme.textMuted;
+  document.getElementById('fontSelect').value = theme.fontFamily;
+  document.getElementById('baseFontSize').value = theme.baseFontSize;
+  document.getElementById('fontSizeValue').textContent = `${theme.baseFontSize}px`;
+  document.getElementById('glowIntensity').value = theme.glowIntensity;
+  document.getElementById('glowValue').textContent = `${theme.glowIntensity}px`;
+}
+
+function resetTheme() {
+  const defaultTheme = {
+    bg: '#0a0e1a',
+    surface: '#111827',
+    accent: '#00d4ff',
+    text: '#f1f5f9',
+    textMuted: '#64748b',
+    fontFamily: "'DM Sans', sans-serif",
+    baseFontSize: 16,
+    glowIntensity: 8
+  };
+  saveTheme(defaultTheme);
+  updateThemeUI(defaultTheme);
+}
+
+function setupThemeControls() {
+  // Color pickers
+  const colorConfigs = [
+    { picker: 'bgColorPicker', hex: 'bgColorHex', prop: 'bg' },
+    { picker: 'surfaceColorPicker', hex: 'surfaceColorHex', prop: 'surface' },
+    { picker: 'accentColorPicker', hex: 'accentColorHex', prop: 'accent' },
+    { picker: 'textColorPicker', hex: 'textColorHex', prop: 'text' },
+    { picker: 'mutedColorPicker', hex: 'mutedColorHex', prop: 'textMuted' }
+  ];
+  
+  colorConfigs.forEach(cfg => {
+    const picker = document.getElementById(cfg.picker);
+    const hexInput = document.getElementById(cfg.hex);
+    if (picker) {
+      picker.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (hexInput) hexInput.value = val;
+        const theme = getCurrentTheme();
+        theme[cfg.prop] = val;
+        saveTheme(theme);
+      });
+    }
+    if (hexInput) {
+      hexInput.addEventListener('change', (e) => {
+        let val = e.target.value;
+        if (!val.startsWith('#')) val = '#' + val;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+          if (picker) picker.value = val;
+          const theme = getCurrentTheme();
+          theme[cfg.prop] = val;
+          saveTheme(theme);
+        }
+      });
+    }
+  });
+  
+  // Presets de colores
+  document.querySelectorAll('.preset-color').forEach(el => {
+    el.addEventListener('click', () => {
+      const color = el.dataset.color;
+      const target = el.dataset.target;
+      if (target === 'bg') {
+        document.getElementById('bgColorPicker').value = color;
+        document.getElementById('bgColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.bg = color;
+        saveTheme(theme);
+      } else if (target === 'surface') {
+        document.getElementById('surfaceColorPicker').value = color;
+        document.getElementById('surfaceColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.surface = color;
+        saveTheme(theme);
+      } else if (target === 'accent') {
+        document.getElementById('accentColorPicker').value = color;
+        document.getElementById('accentColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.accent = color;
+        saveTheme(theme);
+      } else if (target === 'text') {
+        document.getElementById('textColorPicker').value = color;
+        document.getElementById('textColorHex').value = color;
+        const theme = getCurrentTheme();
+        theme.text = color;
+        saveTheme(theme);
+      }
+    });
+  });
+  
+  // Fuente
+  const fontSelect = document.getElementById('fontSelect');
+  if (fontSelect) {
+    fontSelect.addEventListener('change', () => {
+      const theme = getCurrentTheme();
+      theme.fontFamily = fontSelect.value;
+      saveTheme(theme);
+    });
+  }
+  
+  // Tamaño de fuente
+  const fontSizeSlider = document.getElementById('baseFontSize');
+  if (fontSizeSlider) {
+    fontSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('fontSizeValue').textContent = `${val}px`;
+      const theme = getCurrentTheme();
+      theme.baseFontSize = parseInt(val);
+      saveTheme(theme);
+    });
+  }
+  
+  // Intensidad de glow
+  const glowSlider = document.getElementById('glowIntensity');
+  if (glowSlider) {
+    glowSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.getElementById('glowValue').textContent = `${val}px`;
+      const theme = getCurrentTheme();
+      theme.glowIntensity = parseInt(val);
+      saveTheme(theme);
+    });
+  }
+}
+
+function getCurrentTheme() {
+  const root = getComputedStyle(document.documentElement);
+  return {
+    bg: root.getPropertyValue('--bg').trim(),
+    surface: root.getPropertyValue('--surface').trim(),
+    accent: root.getPropertyValue('--accent').trim(),
+    text: root.getPropertyValue('--text').trim(),
+    textMuted: root.getPropertyValue('--text-muted').trim(),
+    fontFamily: root.getPropertyValue('--font-main').trim(),
+    baseFontSize: parseInt(document.body.style.fontSize) || 16,
+    glowIntensity: parseInt(root.getPropertyValue('--card-glow').match(/\d+/)?.[0] || 8)
+  };
+}
+
+function toggleThemePanel() {
+  const content = document.getElementById('themeContent');
+  const icon = document.getElementById('themeToggleIcon');
+  content.classList.toggle('open');
+  icon.classList.toggle('open');
+}
 
 // ==================== LÓGICA DE LA APLICACIÓN ====================
 let currentPlan = Object.keys(RAW)[0] || null;
@@ -1213,6 +1700,10 @@ document.getElementById('searchInput')?.addEventListener('keydown', e => {
 // Inicialización
 initPlanTabs();
 calcularTipoSeguro();
+const savedTheme = loadSavedTheme();
+applyTheme(savedTheme);
+setupThemeControls();
+updateThemeUI(savedTheme);
 
 // Mensaje si no hay datos reales cargados
 if (Object.keys(RAW).length === 0) {
