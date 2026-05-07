@@ -1035,7 +1035,7 @@ const RAW = {"MN 4721 2.67": {"months": [60, 48, 36, 24], "is_quincenal": false,
 // Metadatos de los planes
 for (let plan in RAW) {
   let rows = [];
-  let tasaMeta = { "MN 4721 2.67": 0.0293, "CSP 4671 2.66": 0.0293, "4592 OPC 2.5": 0.0293, "CSB 4695 2.4": 0.0293, "CSB 4707 1.99": 0.0199 };
+  let tasaMeta = { "MN 4721 2.67": 0.0267, "CSP 4671 2.66": 0.0266, "4592 OPC 2.5": 0.0250, "CSB 4695 2.4": 0.0240, "CSB 4707 1.99": 0.0199 };
   let tasaMensual = tasaMeta[plan] || 0.0293;
   let tasaConIva = tasaMensual * 1.16;
   
