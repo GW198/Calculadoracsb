@@ -1071,7 +1071,18 @@ const PLAN_META = {
   'CSB 4707 1.99': { label: 'CSB 1.99%', desc: 'Tasa Mensual 1.99%', cat: 'CAT ~26.7%', color: '#00d4ff' }
 };
 // ==================== SISTEMA DE TEMAS UNIVERSAL ====================
-
+// Obtener la tasa de interés del plan
+function obtenerTasaPlan(planKey) {
+  // Tasas según tu tabla
+  const tasas = {
+    'MN 4721 2.67': 0.0267,
+    'CSP 4671 2.66': 0.0266,
+    '4592 OPC 2.5': 0.025,
+    'CSB 4695 2.4': 0.024,
+    'CSB 4707 1.99': 0.0199
+  };
+  return tasas[planKey] || 0.0267; // valor por defecto
+}
 
 function applyTheme(theme) {
   const root = document.documentElement;
@@ -1366,8 +1377,12 @@ function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes,
 }
 
 // Calcular tabla de amortización completa
-function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro) {
-  let tasaMensual = 0.024; // Tasa base de referencia
+function calcularAmortizacion(montoInicial, plazoMeses, tasaMensual, tipoSeguroPlan) {
+  const tasaConIva = tasaMensual * 1.16;
+  // Pago mensual = (tasaConIva * capital) / (1 - (1 + tasaConIva)^-n)
+  const pagoMensualCalculado = (tasaConIva * montoInicial) / (1 - Math.pow(1 + tasaConIva, -plazoMeses));
+  const pagoMensual = Math.round(pagoMensualCalculado * 100) / 100;
+  
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
@@ -1377,10 +1392,18 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
     let ivaInteres = interes * 0.16;
     let pagoCapital = pagoMensual - interes - ivaInteres;
     if (mes === plazoMeses) pagoCapital = saldo;
-    let nuevoSaldo = saldo - pagoCapital;
-    if (nuevoSaldo < 0) nuevoSaldo = 0;
     
-    let cobroSeguro = calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes, plazoMeses);
+    // Valor asegurable = saldo + interes + ivaInteres
+    let valorAsegurable = saldo + interes + ivaInteres;
+    
+    // Cobro de seguro: 1.99 por cada 1000
+    let cobroSeguro = 0;
+    if (tipoSeguroPlan === 'SEGURO 1' && mes <= 12) {
+      cobroSeguro = valorAsegurable * (1.99 / 1000);
+    } else if (tipoSeguroPlan === 'SEGURO 2') {
+      cobroSeguro = valorAsegurable * (1.99 / 1000);
+    }
+    
     totalSeguro += cobroSeguro;
     
     tabla.push({
@@ -1392,10 +1415,12 @@ function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro)
       pagoMensual: pagoMensual,
       cobroSeguro: cobroSeguro
     });
-    saldo = nuevoSaldo;
+    
+    saldo = saldo - pagoCapital;
     if (saldo <= 0.01) break;
   }
-  return { tabla, totalSeguro };
+  
+  return { tabla, totalSeguro, pagoMensual };
 }
 
 function fmt(n) {
@@ -1526,11 +1551,11 @@ function renderResults() {
   }
   
   const seleccionado = todos[currentMonth];
-  if (!seleccionado) return;
-  
-  const tipoSeguro = calcularTipoSeguro();
-  const pagoMensual = seleccionado.pago;
-  const { tabla, totalSeguro } = calcularAmortizacion(seleccionado.monto, currentMonth, pagoMensual, tipoSeguro);
+if (!seleccionado) return;
+
+const tipoSeguro = calcularTipoSeguro();
+const tasaMensual = obtenerTasaPlan(currentPlan);
+const { tabla, totalSeguro, pagoMensual } = calcularAmortizacion(seleccionado.monto, currentMonth, tasaMensual, tipoSeguro);
   
   const montoADispersar = seleccionado.monto - totalSeguro;
   const interesesTotales = (pagoMensual * currentMonth) - seleccionado.monto;
