@@ -1491,7 +1491,7 @@ function buscar() {
 
 // Renderizar resultados completos
 function renderResults() {
-  if (!currentSearchValue || !currentPlan || !RAW[currentPlan]) return;
+  if (!currentResult|| !currentPlan || !RAW[currentPlan]) return;
   
   const plan = RAW[currentPlan];
   const meta = PLAN_META[currentPlan] || { label: currentPlan, desc: '', cat: '' };
