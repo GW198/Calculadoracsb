@@ -1367,7 +1367,7 @@ function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes,
 
 // Calcular tabla de amortización completa
 function calcularAmortizacion(montoInicial, plazoMeses, pagoMensual, tipoSeguro) {
-  let tasaMensual = 0.024; // Tasa base de referencia
+  let tasaMensual = 0.0293; // Tasa base de referencia
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
@@ -1521,9 +1521,7 @@ function renderResults() {
   }
   
   // Seleccionar mes por defecto
-  if (!currentMonth || !todos[currentMonth]) {
-    currentMonth = plan.months.find(m => todos[m]) || plan.months[0];
-  }
+  
   
   const seleccionado = todos[currentMonth];
   if (!seleccionado) return;
