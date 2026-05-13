@@ -11431,56 +11431,52 @@ const PLAN_META = {
 };
 
 // ==================== SISTEMA DE TEMAS UNIVERSAL ====================
-// Obtener la tasa de interés del plan
-function obtenerTasaPlan(planKey) {
-  // Tasas según tu tabla
-  const tasas = {
-    'MN 4721 2.67': 0.0267,
-    'CSP 4671 2.66': 0.0266,
-    '4592 OPC 2.5': 0.025,
-    'CSB 4695 2.4': 0.024,
-    'MN 3771 2.4': 0.024,
-    'CSB 4707 1.99': 0.0199
-  };
-  return tasas[planKey] || 0.0267; // valor por defecto
+// Tasas según el PLAZO 
+const TASAS_POR_PLAZO = {
+  60: { sinIva: 0.0293, conIva: 0.0340 },  // 2.93% y 3.40%
+  54: { sinIva: 0.0240, conIva: 0.0278 },  // 2.40% y 2.78%
+  48: { sinIva: 0.0293, conIva: 0.0340 },  // 2.93% y 3.40%
+  36: { sinIva: 0.0293, conIva: 0.0340 },  // 2.93% y 3.40%
+  24: { sinIva: 0.0293, conIva: 0.0340 },  // 2.93% y 3.40%
+  12: { sinIva: 0.0293, conIva: 0.0340 }   // 2.93% y 3.40%
+};
+
+// ========== CALCULAR PAGO MENSUAL CON FÓRMULA ==========
+function calcularPagoMensual(monto, plazoMeses) {
+  // Obtener la tasa CON IVA según el plazo
+  const tasaConIva = obtenerTasaPorPlazo(plazoMeses, true); // true = con IVA
+  
+  // Fórmula: P = M * (i * (1+i)^n) / ((1+i)^n - 1)
+  // Donde:
+  // M = monto solicitado
+  // i = tasa mensual con IVA
+  // n = número de meses
+  
+  if (tasaConIva === 0) return monto / plazoMeses; // Sin interés, pago lineal
+  
+  const i = tasaConIva;
+  const n = plazoMeses;
+  
+  // Calcular (1+i)^n
+  const potencia = Math.pow(1 + i, n);
+  
+  // Calcular pago mensual
+  const pago = monto * (i * potencia) / (potencia - 1);
+  
+  return pago;
+}
+function obtenerTasaPorPlazo(plazoMeses, conIva = false) {
+  const tasa = TASAS_POR_PLAZO[plazoMeses];
+  if (!tasa) {
+    // Si no encuentra el plazo, usa valores por defecto (60 meses)
+    return conIva ? 0.0340 : 0.0293;
+  }
+  return conIva ? tasa.conIva : tasa.sinIva;
 }
 
-// Función que devuelve la tasa mensual CON IVA según el plazo
-function obtenerTasaConIvaPorPlazo(plazoMeses) {
-  // Tasas CON IVA según tu tabla
-  const tasasConIva = {
-    60: 0.0340,  // 3.4%
-    54: 0.0278,  // 2.78%
-    48: 0.0340,  // 3.4%
-    36: 0.0340,  // 3.4%
-    24: 0.0340,  // 3.4%
-    12: 0.0340   // 3.4%
-  };
-  return tasasConIva[plazoMeses] || 0.0340;
-}
-
-// Función que devuelve la tasa SIN IVA (para cálculos internos)
-function obtenerTasaSinIvaPorPlazo(plazoMeses) {
-  // Tasas SIN IVA según tu tabla
-  const tasasSinIva = {
-    60: 0.0267,  // 2.67%
-    54: 0.0240,  // 2.4% (asumiendo que 2.78/1.16 = 2.4)
-    48: 0.0267,  // 2.67%
-    36: 0.0267,  // 2.67%
-    24: 0.0267,  // 2.67%
-    12: 0.0267   // 2.67%
-  };
-  return tasasSinIva[plazoMeses] || 0.0267;
-}
 
 // Calcula el pago mensual usando la fórmula que proporcionaste
-function calcularPagoMensual(monto, plazoMeses, tasaMensualConIva) {
-  // Fórmula: Pago = Monto * (tasa * (1 + tasa)^n) / ((1 + tasa)^n - 1)
-  const tasa = tasaMensualConIva;
-  const potencia = Math.pow(1 + tasa, plazoMeses);
-  const pago = monto * (tasa * potencia) / (potencia - 1);
-  return Math.round(pago * 100) / 100; // Redondear a 2 decimales
-}
+
 
 function applyTheme(theme) {
   const root = document.documentElement;
@@ -11776,36 +11772,49 @@ function calcularCobroSeguroMensual(saldo, interes, ivaInteres, tipoSeguro, mes,
 
 // Calcular tabla de amortización completa
 // Calcula la tabla de amortización completa usando la tasa según el plazo
-function calcularAmortizacionPorPlazo(montoInicial, plazoMeses, tipoSeguroPlan) {
-  // Obtener las tasas según el plazo
-  const tasaConIva = obtenerTasaConIvaPorPlazo(plazoMeses);
-  const tasaSinIva = obtenerTasaSinIvaPorPlazo(plazoMeses);
+function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tipoSeguroPlan, pagoMensualReal) {
+  // VALIDACIÓN: si el pago es 0 o inválido, no se puede calcular
   
-  // Calcular el pago mensual con la fórmula
-  const pagoMensual = calcularPagoMensual(montoInicial, plazoMeses, tasaConIva);
   
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
   
+  // Obtener la tasa SIN IVA según el plazo
+  const tasaInteresMensual = obtenerTasaPorPlazo(plazoMeses, false);
+  
+  console.log("Calculando:", { montoInicial, plazoMeses, pagoMensualReal, tasaInteresMensual });
+  
   for (let mes = 1; mes <= plazoMeses; mes++) {
-    // Interés sobre saldo (sin IVA)
-    let interes = saldo * tasaSinIva;
+    // Interés sobre saldo actual (sin IVA)
+    let interes = saldo * tasaInteresMensual;
+    
     // IVA del interés (16%)
     let ivaInteres = interes * 0.16;
+    
     // Pago a capital = pago mensual - interés - IVA
-    let pagoCapital = pagoMensual - interes - ivaInteres;
+    let pagoCapital = pagoMensualReal - interes - ivaInteres;
     
     // Ajuste en el último mes
     if (mes === plazoMeses) {
       pagoCapital = saldo;
+      // Recalcular pago mensual real del último mes
+      let ultimoPago = saldo + interes + ivaInteres;
+      if (ultimoPago > 0) {
+        // Usar el pago real del último mes en lugar del estimado
+        pagoCapital = saldo;
+      }
     }
     
-    // Valor asegurable = saldo + interés + IVA
-    let valorAsegurable = saldo + interes + ivaInteres;
+    // Validación para evitar NaN
+    if (isNaN(pagoCapital) || !isFinite(pagoCapital)) {
+      pagoCapital = 0;
+    }
     
-    // Cálculo del seguro (1.99 por cada 1000)
+    // Cálculo del seguro
+    let valorAsegurable = saldo + interes + ivaInteres;
     let cobroSeguro = 0;
+    
     if (tipoSeguroPlan === 'SEGURO 1' && mes <= 12) {
       cobroSeguro = valorAsegurable * (1.99 / 1000);
     } else if (tipoSeguroPlan === 'SEGURO 2') {
@@ -11820,7 +11829,7 @@ function calcularAmortizacionPorPlazo(montoInicial, plazoMeses, tipoSeguroPlan) 
       interes: interes,
       ivaInteres: ivaInteres,
       pagoCapital: pagoCapital,
-      pagoMensual: pagoMensual,
+      pagoMensual: pagoMensualReal,
       cobroSeguro: cobroSeguro
     });
     
@@ -11828,7 +11837,7 @@ function calcularAmortizacionPorPlazo(montoInicial, plazoMeses, tipoSeguroPlan) 
     if (saldo <= 0.01) break;
   }
   
-  return { tabla, totalSeguro, pagoMensual };
+  return { tabla, totalSeguro };
 }
 
 function fmt(n) {
@@ -12000,33 +12009,54 @@ function renderResults() {
   
   const seleccionado = todos[currentMonth];
 if (!seleccionado) return;
- const pagoMensual = seleccionado.pago;
+const pagoMensual = seleccionado.pago;
 const tipoSeguro = calcularTipoSeguro();
-const tasaMensual = obtenerTasaPlan(currentPlan);
 const { tabla, totalSeguro } = calcularAmortizacionConPagoFijo(
     seleccionado.monto, 
     currentMonth, 
-    tasaMensual, 
     tipoSeguro,
-    pagoMensual  // Pasas el pago real del RAW
-  );
+    pagoMensual
+);
 
   // Nueva función que usa el pago real del RAW
-function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tasaMensual, tipoSeguroPlan, pagoMensualReal) {
+function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tipoSeguroPlan) {
+  // VALIDACIÓN
+  if (!montoInicial || montoInicial <= 0) {
+    console.error("Monto inválido:", montoInicial);
+    return { tabla: [], totalSeguro: 0, pagoMensual: 0 };
+  }
+  
+  // CALCULAR el pago mensual con la fórmula
+  const pagoMensual = calcularPagoMensual(montoInicial, plazoMeses);
+  
+  if (pagoMensual <= 0 || isNaN(pagoMensual)) {
+    console.error("Pago mensual calculado inválido:", pagoMensual);
+    return { tabla: [], totalSeguro: 0, pagoMensual: 0 };
+  }
+  
   let saldo = montoInicial;
   let tabla = [];
   let totalSeguro = 0;
-  let tasaConIva = tasaMensual * 1.16;
+  
+  // Obtener la tasa SIN IVA para calcular intereses
+  const tasaSinIva = obtenerTasaPorPlazo(plazoMeses, false);
   
   for (let mes = 1; mes <= plazoMeses; mes++) {
-    let interes = saldo * tasaMensual;
-    let ivaInteres = interes * 0.16;
-    let pagoCapital = pagoMensualReal - interes - ivaInteres;
+    // Interés sobre saldo actual (sin IVA)
+    let interes = saldo * tasaSinIva;
     
+    // IVA del interés (16%)
+    let ivaInteres = interes * 0.16;
+    
+    // Pago a capital = pago mensual calculado - interés - IVA
+    let pagoCapital = pagoMensual - interes - ivaInteres;
+    
+    // Ajuste en el último mes
     if (mes === plazoMeses) {
       pagoCapital = saldo;
     }
     
+    // Cálculo del seguro
     let valorAsegurable = saldo + interes + ivaInteres;
     let cobroSeguro = 0;
     
@@ -12044,7 +12074,7 @@ function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tasaMensual, 
       interes: interes,
       ivaInteres: ivaInteres,
       pagoCapital: pagoCapital,
-      pagoMensual: pagoMensualReal,
+      pagoMensual: pagoMensual,
       cobroSeguro: cobroSeguro
     });
     
@@ -12052,7 +12082,7 @@ function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tasaMensual, 
     if (saldo <= 0.01) break;
   }
   
-  return { tabla, totalSeguro };
+  return { tabla, totalSeguro, pagoMensual: pagoMensual };
 }
   
   const montoADispersar = seleccionado.monto - totalSeguro;
@@ -12180,21 +12210,28 @@ function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tasaMensual, 
     <div class="tabla-dispersion">
       <table>
         <thead>
-          <tr><th>Mes</th><th>Saldo Inicial</th><th>Interés</th><th>IVA (16%)</th><th>Pago a Capital</th><th>Pago Mensual</th><th>Cobro Seguro</th></tr>
-        </thead>
-        <tbody>`;
+          <tr><th>Mes</th>
+        <th>Saldo Inicial</th>
+        <th>Interés (${(obtenerTasaPorPlazo(currentMonth, false)*100).toFixed(2)}%)</th>
+        <th>IVA (16%)</th>
+        <th>Pago a Capital</th>
+        <th>Pago Mensual</th>
+        <th>Cobro Seguro</th>
+      </tr>
+    </thead>
+    <tbody>`;
   
   tabla.forEach(row => {
-    html += `<tr>
-      <td>${row.mes}</td>
-      <td>${fmt(row.saldoInicial)}</td>
-      <td>${fmt(row.interes)}</td>
-      <td>${fmt(row.ivaInteres)}</td>
-      <td>${fmt(row.pagoCapital)}</td>
-      <td>${fmt(row.pagoMensual)}</td>
-      <td>${row.cobroSeguro > 0 ? fmt(row.cobroSeguro) : '—'}</td>
-    </tr>`;
-  });
+  html += `<tr>
+    <td>${row.mes}</td>
+    <td>${fmt(row.saldoInicial)}</td>
+    <td>${fmt(row.interes)}</td>
+    <td>${fmt(row.ivaInteres)}</td>
+    <td>${fmt(row.pagoCapital)}</td>
+    <td>${fmt(row.pagoMensual)}</td>
+    <td>${row.cobroSeguro > 0 ? fmt(row.cobroSeguro) : '—'}</td>
+   </tr>`;
+});
   
   html += `</tbody></table></div>`;
   document.getElementById('resultsCard').innerHTML = html;
