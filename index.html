@@ -12221,16 +12221,19 @@ function calcularAmortizacionConPagoFijo(montoInicial, plazoMeses, tipoSeguroPla
     </thead>
     <tbody>`;
   
-  tabla.forEach(row => {
+tabla.forEach(row => {
   html += `<tr>
     <td>${row.mes}</td>
     <td>${fmt(row.saldoInicial)}</td>
     <td>${fmt(row.interes)}</td>
     <td>${fmt(row.ivaInteres)}</td>
     <td>${fmt(row.pagoCapital)}</td>
-    <td>${fmt(row.pagoMensual)}</td>
+    <td>
+      ${fmt(pagoMensual)}
+      <div style="font-size: 9px; color: var(--muted); font-weight: normal;">pago fijo durante ${currentMonth} meses</div>
+    </td>
     <td>${row.cobroSeguro > 0 ? fmt(row.cobroSeguro) : '—'}</td>
-   </tr>`;
+  </td>`;
 });
   
   html += `</tbody></table></div>`;
