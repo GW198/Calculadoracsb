@@ -822,15 +822,129 @@
     .resumen-dispersion .monto { font-size: 22px; }
     .tabla-dispersion { font-size: 11px; }
   }
+
+  /* ========== ESTILOS DE LOGIN - INSERTAR DENTRO DE <style> ========== */
+#loginOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#loginOverlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.login-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 48px 40px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--card-glow);
+  text-align: center;
+}
+.login-box .logo {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.login-box .subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+.login-box .input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+.login-box .input-group label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.login-box .input-group input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-box .input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
+}
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), #0099cc);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-top: 8px;
+}
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,212,255,0.4);
+}
+.login-btn:active { transform: translateY(0); }
+.login-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 12px;
+  min-height: 20px;
+}
 </style>
 </head>
 <body>
+<!-- ========== PANTALLA DE LOGIN ========== -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="logo">🏦 Inicio de sesión</div>
+    <div class="subtitle">Acceso </div>
+    <div class="input-group">
+      <label>👤 Usuario</label>
+      <input type="text" id="loginUser" placeholder="Ingresa tu usuario" autocomplete="username">
+    </div>
+    <div class="input-group">
+      <label>🔒 Contraseña</label>
+      <input type="password" id="loginPass" placeholder="Ingresa tu contraseña" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="intentarLogin()">🔑 Acceder</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ========== CONTENIDO PRINCIPAL (INICIALMENTE OCULTO) ========== -->
+<div id="mainContent" style="display: none;">
 <div class="container">
 
   <div class="header">
-    
     <h1>Calculadora</h1>
-   
   </div>
  <!-- Panel de Temas Personalizables - Selector Universal -->
   <div class="theme-panel" id="themePanel">
@@ -14268,6 +14382,43 @@ updateThemeUI(savedTheme);
 if (Object.keys(RAW).length === 0) {
   console.warn('No se encontraron datos en RAW. Usando datos de demostración generados automáticamente.');
 }
+
+// ========== FUNCIÓN DE LOGIN - INSERTAR DENTRO DE <script> ==========
+function intentarLogin() {
+  const user = document.getElementById('loginUser').value;
+  const pass = document.getElementById('loginPass').value;
+  const error = document.getElementById('loginError');
+
+  const USUARIO_VALIDO = 'CANTEC';
+  const CONTRASENA_VALIDA = 'Cantec2026*';
+
+  if (user === USUARIO_VALIDO && pass === CONTRASENA_VALIDA) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = 'block';
+    error.textContent = '';
+    // Inicializar la calculadora
+    initPlanTabs();
+    calcularTipoSeguro();
+    const savedTheme = loadSavedTheme();
+    applyTheme(savedTheme);
+    setupThemeControls();
+    updateThemeUI(savedTheme);
+  } else {
+    error.textContent = '❌ Usuario o contraseña incorrectos';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+
+// Permitir Enter en los campos de login
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('loginUser').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') intentarLogin();
+  });
+  document.getElementById('loginPass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') intentarLogin();
+  });
+});
 </script>
 </body>
 </html>
