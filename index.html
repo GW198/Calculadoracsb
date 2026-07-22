@@ -918,6 +918,136 @@
   margin-top: 12px;
   min-height: 20px;
 }
+
+/* ========== ESTILOS PARA EL APARTADO CNCA ========== */
+.cnca-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-glow);
+}
+
+/* Header del CNCA con botón toggle */
+.cnca-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.cnca-header h3 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cnca-toggle-icon {
+  font-size: 20px;
+  transition: transform 0.3s;
+}
+.cnca-toggle-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Contenido del CNCA (colapsable) */
+.cnca-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.cnca-content.open {
+  max-height: 1200px;
+  margin-top: 20px;
+}
+
+.cnca-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+.cnca-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cnca-field label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cnca-field input {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 16px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.cnca-field input:focus {
+  border-color: var(--accent);
+}
+.cnca-field input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.cnca-resultado {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.cnca-resultado .cnca-valor {
+  font-size: 28px;
+  font-weight: 800;
+  display: block;
+  margin-top: 4px;
+}
+.cnca-resultado .cnca-valor.rojo { color: var(--red); }
+.cnca-resultado .cnca-valor.verde { color: var(--green); }
+.cnca-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.cnca-btn {
+  background: linear-gradient(135deg, var(--accent), #0099cc);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.cnca-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,212,255,0.4);
+}
+.cnca-btn:active { transform: translateY(0); }
+.cnca-btn.secondary {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+}
+.cnca-btn.secondary:hover {
+  border-color: var(--accent);
+  background: rgba(0,212,255,0.1);
+}	
 </style>
 </head>
 <body>
@@ -1074,6 +1204,50 @@
       </div>
     </div>
   </div>
+
+	<!-- ========== APARTADO CNCA ========== -->
+<div class="cnca-card">
+  <div class="cnca-header" onclick="toggleCNCA()">
+    <h3>📋 CNCA</h3>
+    <span class="cnca-toggle-icon" id="cncaToggleIcon">▼</span>
+  </div>
+  <div class="cnca-content" id="cncaContent">
+    <div class="cnca-grid">
+      <div class="cnca-field">
+        <label>💰 Capacidad Actual</label>
+        <input type="number" id="cncaCapacidad" placeholder="Ej. 100,000" min="0" step="1" value="0">
+      </div>
+      <div class="cnca-field">
+        <label>📉 Descuento</label>
+        <input type="number" id="cncaDescuento" placeholder="Ej. 20,000" min="0" step="1" value="0">
+      </div>
+      <div class="cnca-field">
+        <label>💵 Solvencia Mensual (Capacidad + Descuento)</label>
+        <input type="text" id="cncaSolvencia" disabled placeholder="0">
+      </div>
+      <div class="cnca-field">
+        <label>📉 Pago Anticipado</label>
+        <input type="number" id="cncaPagoAnticipado" placeholder="Ej. 10,000" min="0" step="1" value="0">
+      </div>
+      <div class="cnca-field">
+        <label>📋 Monto Solicitado (60 meses - CSB 4695)</label>
+        <input type="text" id="cncaMontoSolicitado" disabled placeholder="0">
+      </div>
+      <div class="cnca-field">
+        <label>✅ Resultado Final (Monto - Pago Anticipado)</label>
+        <input type="text" id="cncaResultadoFinal" disabled placeholder="0">
+      </div>
+    </div>
+    <div class="cnca-actions">
+      <button class="cnca-btn" onclick="calcularCNCA()">🔄 Calcular CNCA</button>
+      <button class="cnca-btn secondary" onclick="aplicarCNCA()">📤 Aplicar a Calculadora</button>
+      <button class="cnca-btn secondary" onclick="tomarMontoCSB()">📥 Tomar Monto de CSB 4695</button>
+    </div>
+    <div id="cncaResultado" class="cnca-resultado">
+      💰 Resultado final: <span class="cnca-valor" id="cncaResultadoValor">$0.00</span>
+    </div>
+  </div>
+</div>
   <!-- Panel de Seguro -->
   <div class="seguro-card">
     <div class="input-label">📋 Información del Cliente</div>
@@ -12430,6 +12604,120 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('loginPass').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') intentarLogin();
+  });
+});
+
+	// ========== FUNCIONES DEL APARTADO CNCA ==========
+
+// Toggle (mostrar/ocultar) el contenido del CNCA
+function toggleCNCA() {
+  const content = document.getElementById('cncaContent');
+  const icon = document.getElementById('cncaToggleIcon');
+  content.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+// Calcular CNCA
+function calcularCNCA() {
+  const capacidad = parseFloat(document.getElementById('cncaCapacidad').value) || 0;
+  const descuento = parseFloat(document.getElementById('cncaDescuento').value) || 0;
+  const pagoAnticipado = parseFloat(document.getElementById('cncaPagoAnticipado').value) || 0;
+  
+  // Calcular solvencia (CAPACIDAD + DESCUENTO)
+  const solvencia = capacidad + descuento;
+  document.getElementById('cncaSolvencia').value = '$' + solvencia.toFixed(2);
+  
+  // Obtener monto solicitado del campo (si ya fue tomado de CSB 4695)
+  const montoSolicitadoStr = document.getElementById('cncaMontoSolicitado').value;
+  let montoSolicitado = 0;
+  if (montoSolicitadoStr) {
+    montoSolicitado = parseFloat(montoSolicitadoStr.replace(/[$,]/g, '')) || 0;
+  }
+  
+  // Calcular resultado final
+  const resultadoFinal = montoSolicitado - pagoAnticipado;
+  document.getElementById('cncaResultadoFinal').value = '$' + resultadoFinal.toFixed(2);
+  
+  // Mostrar en el resumen
+  const resultadoValor = document.getElementById('cncaResultadoValor');
+  resultadoValor.textContent = '$' + resultadoFinal.toFixed(2);
+  if (resultadoFinal < 0) {
+    resultadoValor.className = 'cnca-valor rojo';
+  } else {
+    resultadoValor.className = 'cnca-valor verde';
+  }
+}
+
+// Aplicar solvencia a la calculadora
+function aplicarCNCA() {
+  const solvenciaStr = document.getElementById('cncaSolvencia').value;
+  if (solvenciaStr) {
+    const solvencia = parseFloat(solvenciaStr.replace(/[$,]/g, '')) || 0;
+    document.getElementById('searchInput').value = solvencia;
+    buscar();
+  }
+}
+
+// Tomar el monto del plan CSB 4695 (siempre del plazo de 60 meses)
+function tomarMontoCSB() {
+  // Verificar que el plan actual sea CSB 4695 2.4
+  if (currentPlan !== 'CSB 4695 2.4') {
+    alert('⚠️ Por favor, selecciona el plan "CSB 4695 2.4" primero.');
+    // Cambiar automáticamente al plan CSB 4695 2.4
+    const planKeys = Object.keys(DATASET);
+    const csbKey = planKeys.find(key => key.includes('CSB 4695'));
+    if (csbKey) {
+      currentPlan = csbKey;
+      // Actualizar pestañas
+      document.querySelectorAll('.plan-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.plan === csbKey);
+      });
+      // Re-renderizar si hay búsqueda
+      if (currentSearchValue) renderResults();
+    }
+    return;
+  }
+  
+  // Obtener el monto específico del plazo de 60 meses
+  const plan = DATASET[currentPlan];
+  if (!plan) {
+    alert('⚠️ No se encontraron datos del plan.');
+    return;
+  }
+  
+  // Verificar que el plazo de 60 meses existe
+  if (!plan.months.includes(60)) {
+    alert('⚠️ El plan CSB 4695 2.4 no tiene plazo de 60 meses.');
+    return;
+  }
+  
+  // Buscar el resultado para 60 meses con el valor de búsqueda actual
+  const resultado60 = encontrarResultado(currentPlan, '60', currentSearchValue);
+  
+  if (!resultado60) {
+    alert('⚠️ No se encontró un resultado para 60 meses con el pago/monto actual. Primero realiza una búsqueda.');
+    return;
+  }
+  
+  // Tomar el monto del plazo de 60 meses
+  const monto = resultado60.monto;
+  
+  // Colocar en el campo correspondiente
+  document.getElementById('cncaMontoSolicitado').value = '$' + monto.toFixed(2);
+  
+  // Recalcular automáticamente
+  calcularCNCA();
+}
+
+// Actualizar CNCA cuando cambien los campos
+document.addEventListener('DOMContentLoaded', function() {
+  // Event listeners para actualización automática
+  ['cncaCapacidad', 'cncaDescuento', 'cncaPagoAnticipado'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calcularCNCA);
+      el.addEventListener('change', calcularCNCA);
+    }
   });
 });
 </script>
